@@ -2,8 +2,47 @@
 
 # Цвета для терминала
 GREEN='\033[0;32m'
+RED='\033[0;31m'
 CYAN='\033[0;36m'
 NC='\033[0m'
+
+INSTALL_DIR="$HOME/mtg"
+SERVICE_FILE="/etc/systemd/system/mtg.service"
+
+# Функция удаления
+uninstall_mtg() {
+    echo -e "${RED}--- Удаление mtg ---${NC}"
+    
+    if [ -f "$SERVICE_FILE" ]; then
+        echo "Остановка и отключение сервиса..."
+        sudo systemctl stop mtg
+        sudo systemctl disable mtg
+        sudo rm "$SERVICE_FILE"
+        sudo systemctl daemon-reload
+        sudo systemctl reset-failed
+        echo "Сервис удален."
+    else
+        echo "Файл сервиса не найден, пропускаю..."
+    fi
+
+    if [ -d "$INSTALL_DIR" ]; then
+        echo "Удаление файлов из $INSTALL_DIR..."
+        rm -rf "$INSTALL_DIR"
+        echo "Директория удалена."
+    else
+        echo "Папка с программой не найдена."
+    fi
+
+    echo -e "${GREEN}Удаление успешно завершено!${NC}"
+}
+
+# Проверка аргумента на удаление
+if [ "$1" == "--uninstall" ]; then
+    uninstall_mtg
+    exit 0
+fi
+
+# --- ДАЛЕЕ ИДЕТ БЛОК УСТАНОВКИ (выполняется, если нет флага --uninstall) ---
 
 echo -e "${CYAN}--- Настройка установки mtg ---${NC}"
 
@@ -15,10 +54,9 @@ VERSION=${VERSION:-2.2.1}
 read -p "Введите порт для прокси (по умолчанию 8443): " PORT
 PORT=${PORT:-8443}
 
-echo -e "\n${GREEN}Начинаю установку mtg v$VERSION на порт $PORT...${NC}"
+echo -e "\n${GREEN}Начинаю установку mtg v$VERSION...${NC}"
 
 # 3. Подготовка папки
-INSTALL_DIR="$HOME/mtg"
 mkdir -p "$INSTALL_DIR"
 cd "$INSTALL_DIR" || exit
 
@@ -26,15 +64,13 @@ cd "$INSTALL_DIR" || exit
 FILENAME="mtg-$VERSION-linux-amd64.tar.gz"
 URL="https://github.com/9seconds/mtg/releases/download/v$VERSION/$FILENAME"
 
-echo "Загрузка: $URL"
 if wget -q --show-progress "$URL"; then
     tar -xf "$FILENAME"
-    # Пытаемся найти бинарник (в разных версиях структура папок может чуть меняться)
     find . -name "mtg" -type f -exec mv {} . \;
     chmod +x mtg
     rm -rf "$FILENAME" mtg-"$VERSION"-linux-amd64
 else
-    echo "Ошибка: Не удалось скачать версию $VERSION. Проверьте номер версии на GitHub."
+    echo -e "${RED}Ошибка: Не удалось скачать версию $VERSION.${NC}"
     exit 1
 fi
 
@@ -42,8 +78,7 @@ fi
 SECRET=$(./mtg generate-secret --hex google.com)
 
 # 6. Создание systemd сервиса
-echo "Настройка системного сервиса..."
-sudo bash -c "cat <<EOM > /etc/systemd/system/mtg.service
+sudo bash -c "cat <<EOM > $SERVICE_FILE
 [Unit]
 Description=mtg v2 - MTProto proxy
 After=network.target
@@ -67,15 +102,10 @@ sudo systemctl daemon-reload
 sudo systemctl enable mtg
 sudo systemctl start mtg
 
-# 8. Получение внешнего IP и вывод данных
+# 8. Вывод данных
 IP=$(curl -s https://ifconfig.me)
-
 echo -e "\n${GREEN}============================================"
-echo -e "Установка mtg v$VERSION успешно завершена!"
+echo -e "Установка mtg v$VERSION завершена!"
+echo -e "Ссылка: tg://proxy?server=$IP&port=$PORT&secret=$SECRET"
 echo -e "============================================${NC}"
-echo -e "Порт: ${CYAN}$PORT${NC}"
-echo -e "Секрет: ${CYAN}$SECRET${NC}"
-echo -e "Ссылка для Telegram:"
-echo -e "${GREEN}tg://proxy?server=$IP&port=$PORT&secret=$SECRET${NC}"
-echo -e "============================================"
-echo "Команда для проверки логов: journalctl -u mtg -f"
+echo -e "Для удаления выполните этот же скрипт с флагом: --uninstall"
