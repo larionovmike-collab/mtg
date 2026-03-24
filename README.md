@@ -7,5 +7,5 @@ bash <(curl -sSL https://raw.githubusercontent.com/larionovmike-collab/mtg/refs/
 
 Удаление:
 ```sh
-bash <(curl -Ls [https://raw.githubusercontent.com/larionovmike-collab/mtg/main/install.sh](https://raw.githubusercontent.com/larionovmike-collab/mtg/main/install.sh)) --uninstall
+bash <(curl -sSL https://raw.githubusercontent.com/larionovmike-collab/mtg/refs/heads/main/install.sh) --uninstall
 ```
