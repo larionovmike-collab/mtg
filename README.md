@@ -9,7 +9,7 @@
 ```sh
 bash <(curl -sSL https://raw.githubusercontent.com/larionovmike-collab/mtg/refs/heads/main/install.sh)
 ```
-🗑️ Удаление
+## 🗑️ Удаление
 
 Если вы хотите полностью удалить mtg и его конфигурацию с сервера, выполните:
 ```sh
