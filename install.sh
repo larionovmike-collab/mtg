@@ -86,7 +86,7 @@ check_port_availability() {
 }
 
 # Аргументы командной строки
-if [ "$1" == "--uninstall" ]; then
+if [ "${1:-}" == "--uninstall" ]; then
     uninstall_mtg
     exit 0
 fi
