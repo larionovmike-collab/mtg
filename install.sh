@@ -45,6 +45,7 @@ fi
 # --- ДАЛЕЕ ИДЕТ БЛОК УСТАНОВКИ (выполняется, если нет флага --uninstall) ---
 
 echo -e "${CYAN}--- Настройка установки mtg ---${NC}"
+echo -e "${GREEN}https://github.com/9seconds/mtg/releases${NC}"
 
 # 1. Выбор версии
 read -p "Введите версию mtg (по умолчанию 2.2.3): " VERSION
