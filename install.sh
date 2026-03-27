@@ -108,6 +108,10 @@ read -p "Введите порт для прокси (по умолчанию 84
 PORT=${PORT:-8443}
 check_port_availability "$PORT"
 
+# Выбор Hostname для секрета
+read -p "Введите hostname для генерации секрета (по умолчанию google.com): " HOSTNAME
+HOSTNAME=${HOSTNAME:-google.com}
+
 log "Начинаю установку mtg v$VERSION..." "$GREEN"
 
 # Подготовка папки
@@ -133,8 +137,10 @@ else
 fi
 
 # Генерация секрета
-log "Генерация секрета..."
-SECRET=$(./mtg generate-secret --hex google.com)
+log "Генерация секрета для $HOSTNAME..."
+# Используем введенный пользователем HOSTNAME
+SECRET=$(./mtg generate-secret --hex "$HOSTNAME")
+
 if [ -z "$SECRET" ]; then
     log "Не удалось сгенерировать секрет" "$RED"
     exit 1
@@ -184,6 +190,7 @@ fi
 
 echo -e "\n${GREEN}============================================"
 echo -e "Установка mtg v$VERSION завершена!"
+echo -e "Hostname маскировки: $HOSTNAME"
 echo -e "Ссылка: tg://proxy?server=$IP&port=$PORT&secret=$SECRET"
 echo -e "============================================${NC}"
 echo -e "Для проверки статуса: sudo systemctl status mtg"
