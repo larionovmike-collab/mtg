@@ -99,8 +99,8 @@ log "--- Настройка установки mtg ---"
 log "https://github.com/9seconds/mtg/releases"
 
 # Выбор версии
-read -p "Введите версию mtg (по умолчанию 2.2.4): " VERSION
-VERSION=${VERSION:-2.2.4}
+read -p "Введите версию mtg (по умолчанию 2.2.6): " VERSION
+VERSION=${VERSION:-2.2.6}
 check_version_availability "$VERSION"
 
 # Параметры порта
