@@ -7,6 +7,11 @@
 ```sh
 bash <(curl -sSL https://raw.githubusercontent.com/larionovmike-collab/mtg/refs/heads/main/install.sh)
 ```
+## Обновление
+
+```sh
+bash <(curl -sSL https://raw.githubusercontent.com/larionovmike-collab/mtg/refs/heads/main/install.sh) --update
+```
 ## Удаление
 
 ```sh
